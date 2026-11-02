@@ -1,6 +1,21 @@
 import random
 
 
+class MazeData:
+    def __init__(self):
+        self.expanded_nodes = 0
+        self.discoverd_nodes = 0
+
+    def collect_from(self, maze: Maze):
+        def count_states(node: Node):
+            if node.state == "DISCOVERED":
+                self.discoverd_nodes += 1
+            elif node.state == "EXPANDED":
+                self.expanded_nodes += 1
+
+        maze.apply_for_each_node(lambda node: count_states(node))
+
+
 class Neighbor:
     def __init__(self, node, is_path_free):
         self.node = node
@@ -16,6 +31,7 @@ class Node:
         self.down_node = Neighbor(down_node, False)
         self.x = x
         self.y = y
+        self.state: "DISCOVERD" | "EXPANDED" | None = None
 
     def is_dead_end(self):
         for link in (self.left_node, self.up_node, self.right_node, self.down_node):
@@ -97,10 +113,6 @@ class Maze:
         self.clear_visited()
 
     def clear_visited(self):
-        # Percorre a grade pelos .node estruturais (nao pelo is_path_free,
-        # que pode nao conectar tudo ainda) e zera visited em cada celula.
-        # Usa um set auxiliar para controlar quem ja foi percorrido, porque
-        # e justamente node.visited que esta sendo zerado aqui.
         stack = [self.first]
         seen = set()
 
