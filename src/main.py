@@ -9,7 +9,8 @@ import maze_builders
 import maze_solvers
 from constants import MAZE_HEIGHT, MAZE_WIDTH, MULTIPLIER
 from draw_utils import draw_square, draw_square_filled
-from maze import Maze, MazeData
+from maze import Maze
+from benchmark import MazeData
 
 
 def available(package):
@@ -71,9 +72,7 @@ def main():
     # Benchmark
     maze_data = MazeData()
     maze_data.collect_from(maze)
-    print(
-        f"EXPADED: {maze_data.expanded_nodes} DISCOVERED: {maze_data.discoverd_nodes}"
-    )
+    maze_data.print_data()
 
     # Screen setup
     pygame.init()

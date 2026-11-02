@@ -1,20 +1,5 @@
 import random
-
-
-class MazeData:
-    def __init__(self):
-        self.expanded_nodes = 0
-        self.discoverd_nodes = 0
-
-    def collect_from(self, maze: Maze):
-        def count_states(node: Node):
-            if node.state == "DISCOVERED":
-                self.discoverd_nodes += 1
-            elif node.state == "EXPANDED":
-                self.expanded_nodes += 1
-
-        maze.apply_for_each_node(lambda node: count_states(node))
-
+import time
 
 class Neighbor:
     def __init__(self, node, is_path_free):
@@ -109,7 +94,13 @@ class Maze:
         self.last = last
         self.solver = solver
 
+        # solve
+        start_build_time = time.perf_counter()
         builder(first)
+        end_build_time = time.perf_counter()
+        self.build_time = (end_build_time - start_build_time) * 1000
+
+        # Calcula a diferença
         self.clear_visited()
 
     def clear_visited(self):
@@ -156,4 +147,9 @@ class Maze:
 
     def solve(self, draw_node):
         self.clear_visited()
-        return self.solver(self.first, self.last, draw_node)
+
+        start_solve_time = time.perf_counter()
+        self.solver(self.first, self.last, draw_node)
+        end_solve_time = time.perf_counter()
+        self.solve_time = (end_solve_time - start_solve_time) * 1000
+
