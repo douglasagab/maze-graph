@@ -1,4 +1,5 @@
 import random
+from collections import deque
 
 from maze import Node
 
@@ -51,4 +52,26 @@ from maze import Node
 
 
 def solve(start: Node, end: Node, draw_node):
-    raise NotImplementedError("Implemente a busca em largura (BFS) aqui")
+    start.visited = True
+
+    queue = deque([start])
+
+    while len(queue) > 0:
+        current = queue.popleft()
+        current.state = "EXPANDED"
+        draw_node(current, "EXPANDED")
+
+        if current == end:
+            return True
+
+        neighbors = current.get_reachable_neighbors()
+
+        for n in neighbors:
+            if not n.visited:
+                n.visited = True
+                n.visited = True
+                n.state = "DISCOVERED"
+                draw_node(n, "DISCOVERED")
+                queue.append(n)
+
+    return False
