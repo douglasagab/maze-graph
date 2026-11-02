@@ -5,7 +5,6 @@ class MazeData:
         self.discoverd_nodes = 0
         self.total_edges = 0
         self.degrees = [0, 0, 0, 0]
-        self.total_dead_ends = 0
 
     def collect_from(self, maze: Maze):
         def collect(node: Node):
@@ -16,9 +15,6 @@ class MazeData:
             elif node.state == "EXPANDED":
                 self.expanded_nodes += 1
 
-            if node.is_dead_end():
-                self.total_dead_ends += 1
-
             degree = len(node.get_reachable_neighbors())
             self.degrees[degree - 1] += 1
             self.total_edges += degree
@@ -28,6 +24,8 @@ class MazeData:
         self.average_degree = self.total_edges / self.total_nodes
         self.build_time = maze.build_time
         self.solve_time = maze.solve_time
+        self.total_dead_ends = self.degrees[0]
+
 
     def print_data(self):
         print(self.degrees)
