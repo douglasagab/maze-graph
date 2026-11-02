@@ -16,7 +16,7 @@ class Node:
         self.down_node = Neighbor(down_node, False)
         self.x = x
         self.y = y
-        self.state: "DISCOVERD" | "EXPANDED" | None = None
+        self.state: "DISCOVERED" | "EXPANDED" | None = None
 
     def is_dead_end(self):
         for link in (self.left_node, self.up_node, self.right_node, self.down_node):
@@ -103,7 +103,7 @@ class Maze:
         # Calcula a diferença
         self.clear_visited()
 
-    def clear_visited(self):
+    def clear_visited(self, clear_state: bool = False):
         stack = [self.first]
         seen = set()
 
@@ -113,6 +113,8 @@ class Maze:
                 continue
             seen.add(node)
             node.visited = False
+            if clear_state:
+                node.state = None
 
             for link in (node.left_node, node.right_node, node.up_node, node.down_node):
                 if link.node is not None and link.node not in seen:
@@ -146,7 +148,7 @@ class Maze:
                     stack.append(neighbor)
 
     def solve(self, draw_node):
-        self.clear_visited()
+        self.clear_visited(clear_state=True)
 
         start_solve_time = time.perf_counter()
         self.solver(self.first, self.last, draw_node)

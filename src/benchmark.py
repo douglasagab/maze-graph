@@ -63,9 +63,15 @@ class MazeData:
     def __init__(self):
         self.total_nodes = 0
         self.expanded_nodes = 0
-        self.discoverd_nodes = 0
+        self.discovered_nodes = 0
         self.total_edges = 0
-        self.degrees = [0, 0, 0, 0]
+        self.degrees = [0, 0, 0, 0, 0]
+        self.average_degree = 0.0
+        self.average_corridor_length = 0.0
+        self.build_time = 0.0
+        self.solve_time = 0.0
+        self.total_dead_ends = 0
+        self.total_junctions = 0
 
     def collect_from(self, maze: Maze):
         nodes = []
@@ -75,26 +81,56 @@ class MazeData:
             nodes.append(node)
 
             if node.state == "DISCOVERED":
-                self.discoverd_nodes += 1
+                self.discovered_nodes += 1
             elif node.state == "EXPANDED":
                 self.expanded_nodes += 1
+                self.discovered_nodes += 1
 
             degree = len(node.get_reachable_neighbors())
-            self.degrees[degree - 1] += 1
+            if 0 <= degree <= 4:
+                self.degrees[degree] += 1
             self.total_edges += degree
 
         maze.apply_for_each_node(lambda node: collect(node))
 
-        self.average_degree = self.total_edges / self.total_nodes
+        self.average_degree = (
+            self.total_edges / self.total_nodes if self.total_nodes else 0.0
+        )
         self.average_corridor_length = average_corridor_length(nodes)
         self.build_time = maze.build_time
         self.solve_time = maze.solve_time
-        self.total_dead_ends = self.degrees[0]
-
+        self.total_dead_ends = self.degrees[1]
+        self.total_junctions = self.degrees[3] + self.degrees[4]
 
     def print_data(self):
         print(self.degrees)
-
         print(
-            f"expanded: {self.expanded_nodes}\ndiscovered: {self.discoverd_nodes}\nedges: {self.total_edges}\ntotal_dead_ends: {self.total_dead_ends}\naverage_degree: {self.average_degree}\naverage_corridor_length: {self.average_corridor_length}\nsolve_time: {self.solve_time}\nbuild_time:{self.build_time}"
+            f"expanded: {self.expanded_nodes}\n"
+            f"discovered: {self.discovered_nodes}\n"
+            f"edges: {self.total_edges}\n"
+            f"total_dead_ends: {self.total_dead_ends}\n"
+            f"total_junctions: {self.total_junctions}\n"
+            f"average_degree: {self.average_degree}\n"
+            f"average_corridor_length: {self.average_corridor_length}\n"
+            f"solve_time: {self.solve_time}\n"
+            f"build_time: {self.build_time}"
         )
+
+    def as_dict(self):
+        return {
+            "build_time_ms": self.build_time,
+            "solve_time_ms": self.solve_time,
+            "total_nodes": self.total_nodes,
+            "expanded_nodes": self.expanded_nodes,
+            "discovered_nodes": self.discovered_nodes,
+            "total_edges": self.total_edges,
+            "average_degree": self.average_degree,
+            "average_corridor_length": self.average_corridor_length,
+            "dead_ends": self.total_dead_ends,
+            "junctions": self.total_junctions,
+            "degree_0": self.degrees[0],
+            "degree_1": self.degrees[1],
+            "degree_2": self.degrees[2],
+            "degree_3": self.degrees[3],
+            "degree_4": self.degrees[4],
+        }
