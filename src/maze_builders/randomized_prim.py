@@ -60,11 +60,6 @@ from maze import Node
 
 
 
-import random
-
-from maze import Node
-
-
 def build(start: Node):
     # Marca o nó inicial como visitado
     start.visited = True
